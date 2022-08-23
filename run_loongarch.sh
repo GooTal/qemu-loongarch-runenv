@@ -14,6 +14,7 @@ Help()
    echo "c <NCPU>    simulated cpu number"
    echo "d use -s to listen on 1234 debug port"
    echo "D use -s -S to listen on 1234 debug port and stop waiting for attach"
+   echo "x use -gdb tcp::1122 -S to listen on 1122 debug port and stop waiting for attach"
    echo "g     Use graphic UI."
    echo "h     Print this Help."
    echo "i <initrd> use this file as initrd"
@@ -36,7 +37,7 @@ DEBUG=''
 QEMU="./qemu-system-loongarch64"
 
 # Get the options
-while getopts ":b:c:dDghi:k:m:q:" option; do
+while getopts ":b:c:dDxghi:k:m:q:" option; do
    case $option in
       b)
         BIOS=$OPTARG;;
@@ -45,7 +46,9 @@ while getopts ":b:c:dDghi:k:m:q:" option; do
       d)
         DEBUG='-s';;
       D)
-        DEBUG='-s -S';;
+      	DEBUG='-s -S';;
+      x)
+        DEBUG='-gdb tcp::1122 -S';;
       g) 
          USE_GRAPHIC="yes";;
       h) # display Help
@@ -73,6 +76,6 @@ else
 #    GRAPHIC="-vga virtio -device virtio-keyboard-pci -device virtio-mouse-pci"
     GRAPHIC="-vga virtio -device qemu-xhci -device usb-kbd -device usb-mouse"
 fi
-
+# $QEMU -d int,mmu -m $MEM -smp $CPUS -bios $BIOS -kernel $KERNEL -initrd $INITRD -append "$CMDLINE" $GRAPHIC $DEBUG
 set -x
 $QEMU -m $MEM -smp $CPUS -bios $BIOS -kernel $KERNEL -initrd $INITRD -append "$CMDLINE" $GRAPHIC $DEBUG
